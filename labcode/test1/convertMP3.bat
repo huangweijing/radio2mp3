@@ -1,0 +1,1 @@
+..\..\ffmpeg\bin\ffmpeg -i output.flv output.mp3
