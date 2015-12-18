@@ -1,20 +1,17 @@
 package weijinglab.radiotable.net.webpage;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Vector;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import weijinglab.radiotable.entity.ProgramEntry;
 import weijinglab.radiotable.entity.TimeTable;
+import weijinglab.radiotable.utils.RadioTableUtil;
 
 /**
  * 
@@ -22,47 +19,39 @@ import weijinglab.radiotable.entity.TimeTable;
  *
  */
 public class HtmlExtractor {
-
+	
+	/** 番組スケジュールのURL */
+	private String timetableUrl;
+	/** 一日中最大の番組数 */
+	private Integer maxSizeOfTimeTable = 100;
+	/** メインテーブルのCSSクラス名 */
+	private final static String TABLE_CLASS_NAME = "scrollBody";
+	
 	/**
-	 * 
-	 * @param pageUrl
-	 * @return
+	 * HTMLコードを分析して、タイムスケジュールに記入する
+	 * @param timeTable
 	 * @throws IOException
 	 */
-	public static InputStream extractUrl(String pageUrl) throws IOException {
-		URL url = new URL(pageUrl);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setRequestMethod("GET");
-		if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-			return connection.getInputStream();
-		} 
-		return null;
-	}
-	
-	public static void fillTimeTable(TimeTable timeTable) throws IOException {
-		
-		Element tableArr[][] = new Element[7][100];
-		
-//		InputStream webpageStream = extractUrl("http://www.agqr.jp/timetable/streaming.php");
-		Document document = Jsoup.connect("http://www.agqr.jp/timetable/streaming.php").get();
-//		System.out.println(document.html());
-		Elements elements = document.getElementsByClass("scrollBody");
+	public void fillTimeTable(TimeTable timeTable) throws IOException {
+		//一週間分の番組 * maxSizeOfTimeTable
+		Element tableArr[][] = new Element[7][maxSizeOfTimeTable];
+
+		//
+		Document document = Jsoup.connect(this.timetableUrl).get();
+		Elements elements = document.getElementsByClass(TABLE_CLASS_NAME);
 		if(elements.size() > 0)
 		{
 			Element tableElement = elements.get(0);
-//			System.out.println(tableElement.html());
-			Elements trElements = tableElement.getElementsByTag("tr");
-			System.out.println(trElements.size());
+			Elements trElements = tableElement.getElementsByTag(HtmlConstants.TR);
 			Integer trIdx = 1;
 			for(Element trElement : trElements) {
 				
-				System.out.println(trIdx);
 				trIdx++;
 				
-				Elements tdElements = trElement.getElementsByTag("td");
+				Elements tdElements = trElement.getElementsByTag(HtmlConstants.TD);
 				for(Element tdElement : tdElements) {
 					//rowspan属性を取得する
-					String strRowSpan = tdElement.attr("rowspan");
+					String strRowSpan = tdElement.attr(HtmlConstants.ROWSPAN);
 					Integer intRowSpan = 1;
 					if(!StringUtils.isEmpty(strRowSpan)) {
 						intRowSpan = new Integer(strRowSpan);
@@ -71,17 +60,24 @@ public class HtmlExtractor {
 					for(int i=0; i < intRowSpan; i++) {
 						tableArr[minNotBlankVector.getLeft()][minNotBlankVector.getRight() + i] = tdElement; 
 					}
-					//minNotBlankVector = getMinNotBlank(tableArr);
+					ProgramEntry programEntry = createProgramEntryByTd(tdElement);
+					timeTable.addProgramEntry(
+							RadioTableUtil.convertArrayIndexToWeekday(minNotBlankVector.getLeft())
+							, programEntry);
 					System.out.println(String.format("%s, %s"
 							, minNotBlankVector.getLeft(), minNotBlankVector.getRight()));
 				}
-				//System.out.println(trElement.getElementsByTag("td").size());
 			}
 		}
-//		System.out.println(elements.size());
-//		for(Element element : elements) {
-//			System.out.println(element.html());
-//		}
+	}
+	
+	private ProgramEntry createProgramEntryByTd(Element tdElement) {
+		ProgramEntry programEntry = new ProgramEntry();
+		Elements timeElements = tdElement.getElementsByTag("time");
+		if(timeElements.size() > 0) {
+			System.out.println(timeElements.get(0).text());
+		}
+		return programEntry;
 	}
 	
 	/**
@@ -117,9 +113,40 @@ public class HtmlExtractor {
 		return Pair.of(minIndexRelatedIndex, minIndex);
 	}
 	
-	public static void main(String[] args) throws IOException {
-		TimeTable timeTable = new TimeTable();
-		fillTimeTable(timeTable);		
+	/**
+	 * @return 番組スケジュールのURL
+	 */
+	public String getTimetableUrl() {
+		return timetableUrl;
 	}
+
+	/**
+	 * @param timetableUrl 番組スケジュールのURL to set
+	 */
+	public void setTimetableUrl(String timetableUrl) {
+		this.timetableUrl = timetableUrl;
+	}
+
+	/**
+	 * @return 一日中最大の番組数
+	 */
+	public Integer getMaxSizeOfTimeTable() {
+		return maxSizeOfTimeTable;
+	}
+
+	/**
+	 * @param maxSizeOfTimeTable 一日中最大の番組数 to set
+	 */
+	public void setMaxSizeOfTimeTable(Integer maxSizeOfTimeTable) {
+		this.maxSizeOfTimeTable = maxSizeOfTimeTable;
+	}
+	
+	public static void main(String[] args) throws IOException {
+		HtmlExtractor htmlExtractor = new HtmlExtractor();
+		TimeTable timeTable = new TimeTable();
+		htmlExtractor.setTimetableUrl("http://www.agqr.jp/timetable/streaming.php");
+		htmlExtractor.fillTimeTable(timeTable);		
+	}
+
 
 }
