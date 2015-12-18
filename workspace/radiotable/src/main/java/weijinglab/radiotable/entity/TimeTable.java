@@ -15,7 +15,7 @@ public class TimeTable {
 	public TimeTable() {
 		timeTableData = new HashMap<Integer, List<ProgramEntry>>();
 
-		for(int dayOfWeek = Calendar.SUNDAY; dayOfWeek<Calendar.SATURDAY; dayOfWeek++) {
+		for(int dayOfWeek = Calendar.SUNDAY; dayOfWeek<= Calendar.SATURDAY; dayOfWeek++) {
 			timeTableData.put(dayOfWeek, new ArrayList<ProgramEntry>());
 		}
 	}

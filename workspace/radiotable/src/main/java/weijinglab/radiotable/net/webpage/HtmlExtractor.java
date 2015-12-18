@@ -61,11 +61,13 @@ public class HtmlExtractor {
 						tableArr[minNotBlankVector.getLeft()][minNotBlankVector.getRight() + i] = tdElement; 
 					}
 					ProgramEntry programEntry = createProgramEntryByTd(tdElement);
+					
 					timeTable.addProgramEntry(
 							RadioTableUtil.convertArrayIndexToWeekday(minNotBlankVector.getLeft())
 							, programEntry);
-					System.out.println(String.format("%s, %s"
-							, minNotBlankVector.getLeft(), minNotBlankVector.getRight()));
+						
+//					System.out.println(String.format("%s, %s"
+//							, minNotBlankVector.getLeft(), minNotBlankVector.getRight()));
 				}
 			}
 		}
