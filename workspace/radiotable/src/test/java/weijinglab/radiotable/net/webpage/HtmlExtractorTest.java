@@ -1,10 +1,12 @@
 package weijinglab.radiotable.net.webpage;
 
 import java.io.IOException;
+import java.util.Date;
 
-import weijinglab.radiotable.entity.TimeTable;
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import weijinglab.radiotable.entity.ProgramEntry;
+import weijinglab.radiotable.entity.TimeTable;
 
 public class HtmlExtractorTest extends TestCase {
 
@@ -12,7 +14,10 @@ public class HtmlExtractorTest extends TestCase {
 		HtmlExtractor htmlExtractor = new HtmlExtractor();
 		TimeTable timeTable = new TimeTable();
 		htmlExtractor.setTimetableUrl("http://www.agqr.jp/timetable/streaming.php");
-		htmlExtractor.fillTimeTable(timeTable);		
+		htmlExtractor.fillTimeTable(timeTable);
+		ProgramEntry currentProgram = timeTable.getCurrentProgram(new Date());
+		System.out.println(currentProgram.getProgramName());
+		System.out.println(currentProgram.getCaster());
 	}
 
 	public void testGetTimetableUrl() {

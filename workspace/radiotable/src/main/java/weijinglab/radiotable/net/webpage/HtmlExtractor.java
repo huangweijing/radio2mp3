@@ -115,7 +115,7 @@ public class HtmlExtractor {
 			if(hour < START_HOUR_OF_DAY) {
 				programStartDate.add(Calendar.DATE, 1);
 			}
-			programStartDate.set(Calendar.HOUR, hour);
+			programStartDate.set(Calendar.HOUR_OF_DAY, hour);
 			programStartDate.set(Calendar.MINUTE, minute);
 			programStartDate.set(Calendar.SECOND, 0);
 			programEntry.setStartTime(programStartDate.getTime());
@@ -143,7 +143,7 @@ public class HtmlExtractor {
 
 		Elements casterElements = tdElement.select(".rp");
 		if(casterElements.size() > 0 
-				&& StringUtils.isEmpty(casterElements.get(0).text())) {
+				&& !StringUtils.isEmpty(casterElements.get(0).text())) {
 			programEntry.setCaster(casterElements.get(0).text());
 		}
 		
@@ -217,13 +217,5 @@ public class HtmlExtractor {
 	public void setMaxSizeOfTimeTable(Integer maxSizeOfTimeTable) {
 		this.maxSizeOfTimeTable = maxSizeOfTimeTable;
 	}
-	
-	public static void main(String[] args) throws IOException {
-		HtmlExtractor htmlExtractor = new HtmlExtractor();
-		TimeTable timeTable = new TimeTable();
-		htmlExtractor.setTimetableUrl("http://www.agqr.jp/timetable/streaming.php");
-		htmlExtractor.fillTimeTable(timeTable);		
-	}
-
 
 }
