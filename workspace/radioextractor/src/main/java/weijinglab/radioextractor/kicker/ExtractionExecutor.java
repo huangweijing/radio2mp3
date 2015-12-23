@@ -4,13 +4,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 
+import com.mpatric.mp3agic.ID3v1;
+import com.mpatric.mp3agic.ID3v1Tag;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.NotSupportedException;
+import com.mpatric.mp3agic.UnsupportedTagException;
+
 import weijinglab.radioextractor.utils.CommonUtils;
+import weijinglab.radioextractor.utils.ExtractionConstants;
+import weijinglab.radioextractor.utils.LogMessage;
 import weijinglab.radioextractor.utils.RadioExtractorSettingReader;
 import weijinglab.radioextractor.utils.SettingConstants;
 import weijinglab.radiotable.entity.ProgramEntry;
@@ -39,7 +49,7 @@ public class ExtractionExecutor implements Runnable{
 	 * flvストリームを抽出する。
 	 * @param currentProgram 抽出する番組情報
 	 */
-	private void startExtraction(ProgramEntry currentProgram) {
+	private boolean startExtraction(ProgramEntry currentProgram) {
 		logger.info(String.format("「%s」録画スタート!保存ファイル名「%s.mp3」"
 				, currentProgram.getProgramName()
 				, CommonUtils.convertToYyyyMMdd_ssmm(currentProgram.getStartTime())));
@@ -59,7 +69,10 @@ public class ExtractionExecutor implements Runnable{
 					settingReader.getSetting(SettingConstants.RTMPDUMP_PARAM_STR)
 					, 0
 					, lastSeconds
-					, filename);
+					, String.format(ExtractionConstants.FILE_PATH_PATTERN
+							, settingReader.getSetting(SettingConstants.RTMPDUMP_OUTPUT_PATH)
+							, filename
+							, ExtractionConstants.FILE_TYPE_FLV));
 			
 			//ProcessBuilderの引数フォーマットに合わせる。
 			List<String> commandList = new ArrayList<String>();
@@ -88,28 +101,45 @@ public class ExtractionExecutor implements Runnable{
 			
 			Process process = rtmpdumpProcessBuilder.start();
 			process.waitFor();
-			
-			System.out.println(process.exitValue());
+
+			//プログラム終了結果を取得する。
+			Integer exitValue = process.exitValue();
+			if(exitValue == 0) {
+				logger.error(String.format(
+						LogMessage.LOG_RADIO_EXTRACTION_COMPLETED, filename));
+				return true;
+			} else {
+				logger.error(String.format(
+						LogMessage.LOG_RADIO_EXTRACTION_FAILED, exitValue));
+			}
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 	
 	/**
 	 * mp3転換を実行する
 	 * @param currentProgram 転換する番組情報
 	 */
-	private void startConvert2Mp3(ProgramEntry currentProgram) {
+	private boolean startConvert2Mp3(ProgramEntry currentProgram) {
 		//ファイル名を定義する（日付＋時間）
 		String filename = CommonUtils.convertToYyyyMMdd_ssmm(currentProgram.getStartTime());
 		RadioExtractorSettingReader settingReader = RadioExtractorSettingReader.getInstance();
 		//引数
 		String ffmpegParamStr = String.format(
 				settingReader.getSetting(SettingConstants.FFMPEG_PARAM_STR)
-				, filename, filename);
+				, String.format(ExtractionConstants.FILE_PATH_PATTERN
+						, settingReader.getSetting(SettingConstants.RTMPDUMP_OUTPUT_PATH)
+						, filename
+						, ExtractionConstants.FILE_TYPE_FLV) 
+				,  String.format(ExtractionConstants.FILE_PATH_PATTERN
+						, settingReader.getSetting(SettingConstants.FFMPEG_OUTPUT_PATH)
+						, filename
+						, ExtractionConstants.FILE_TYPE_MP3));
 		
 		List<String> commandList = new ArrayList<String>();
 		commandList.add(settingReader.getSetting(SettingConstants.FFMPEG_EXE_PATH));
@@ -135,12 +165,52 @@ public class ExtractionExecutor implements Runnable{
 		try {
 			Process process = ffmpegProcessBuilder.start();
 			process.waitFor();
-			System.out.println(process.exitValue());
+			//プログラム終了結果を取得する。
+			Integer exitValue = process.exitValue();
+			if(exitValue == 0) {
+				logger.error(String.format(LogMessage.LOG_MP3_CONVERTION_COMPLETED, filename));
+				//MP3ファイル名＆タグを編集する
+				editMp3Tag(filename, currentProgram);
+				return true;
+			} else {
+				logger.error(String.format(LogMessage.LOG_MP3_CONVERTION_FAILED, exitValue));
+			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		} catch (UnsupportedTagException e) {
+			e.printStackTrace();
+		} catch (InvalidDataException e) {
+			e.printStackTrace();
+		} catch (NotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
+		return false;
+	}
+	
+	private boolean editMp3Tag(String filename, ProgramEntry currentProgram) 
+			throws UnsupportedTagException, InvalidDataException, IOException, NotSupportedException {
+		Mp3File mp3file = new Mp3File(filename);
+		ID3v1 id3v1Tag;
+		if (mp3file.hasId3v1Tag()) {
+			  id3v1Tag =  mp3file.getId3v1Tag();
+			} else {
+			  // mp3 does not have an ID3v1 tag, let's create one..
+			  id3v1Tag = new ID3v1Tag();
+			  mp3file.setId3v1Tag(id3v1Tag);
+		}
+		id3v1Tag.setTrack(Integer.valueOf(1).toString());
+		id3v1Tag.setArtist(currentProgram.getCaster());
+		id3v1Tag.setTitle(currentProgram.getProgramName());
+		id3v1Tag.setAlbum(ExtractionConstants.RADIO_ALBUM);
+		id3v1Tag.setYear(Integer.valueOf(
+				Calendar.getInstance().get(Calendar.YEAR)).toString());
+		id3v1Tag.setComment(String.format("メール：%s / 番組リンク：%s / "
+				, currentProgram.getCasterMail(), currentProgram.getProgramLink()));
+		mp3file.save(filename);
+		return false;
 	}
 }

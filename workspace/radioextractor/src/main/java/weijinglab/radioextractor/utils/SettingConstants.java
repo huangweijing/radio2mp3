@@ -15,18 +15,22 @@ public final class SettingConstants {
 	public final static String FFMPEG_EXE_PATH = "extractor.tools.ffmpeg.exepath";
 	/** ffmpegのパラメーター */
 	public final static String FFMPEG_PARAM_STR = "extractor.tools.ffmpeg.param";
-	/** rtmpdumpの置き場所 */
-	public final static String RTMPDUMP_EXE_PATH = "extractor.tools.rtmpdump.exepath";
-	/** rtmpdumpのパラメーター */
-	public final static String RTMPDUMP_PARAM_STR = "extractor.tools.rtmpdump.param";
 	/** ffmpegのインフォログ出力先 */
 	public final static String FFMPEG_INFO_LOG = "extractor.tools.ffmpeg.infolog";
 	/** ffmpegのエラーログ出力先 */
 	public final static String FFMPEG_ERR_LOG = "extractor.tools.ffmpeg.errlog";
+	/** ffmpegのmp3出力先 */
+	public final static String FFMPEG_OUTPUT_PATH = "extractor.tools.ffmpeg.outputpath";
+	/** rtmpdumpの置き場所 */
+	public final static String RTMPDUMP_EXE_PATH = "extractor.tools.rtmpdump.exepath";
+	/** rtmpdumpのパラメーター */
+	public final static String RTMPDUMP_PARAM_STR = "extractor.tools.rtmpdump.param";
 	/** rtmpdumpのインフォログ出力先 */
 	public final static String RTMPDUMP_INFO_LOG = "extractor.tools.rtmpdump.infolog";
 	/** rtmpdumpのエラーログ出力先 */
 	public final static String RTMPDUMP_ERR_LOG = "extractor.tools.rtmpdump.errlog";
+	/** rtmpdumpのflv出力先 */
+	public final static String RTMPDUMP_OUTPUT_PATH = "extractor.tools.rtmpdump.outputpath";
 	/** コマンドの分割符号 */
 	public final static String COMMAND_SPLIT_CHAR = "##";
 }
