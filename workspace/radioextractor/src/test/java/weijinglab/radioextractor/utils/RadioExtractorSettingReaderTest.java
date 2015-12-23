@@ -6,7 +6,7 @@ public class RadioExtractorSettingReaderTest extends TestCase {
 
 	public void testGetInstance() {
 		RadioExtractorSettingReader settings = RadioExtractorSettingReader.getInstance();
-		assertEquals("http://www.agqr.jp/timetable/streaming.php", settings.getSetting("web.url"));
+		assertEquals("http://www.agqr.jp/timetable/streaming.php", settings.getSetting("net.timetable"));
 	}
 
 }
