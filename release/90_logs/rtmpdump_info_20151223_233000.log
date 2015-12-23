@@ -1,18 +1,0 @@
-RTMPDump v2.4
-(c) 2010 Andrej Stepanchuk, Howard Chu, The Flvstreamer Team; license: GPL
-Connecting ...
-INFO: Connected...
-ERROR: rtmp server sent error
-Starting Live Stream
-For duration: 1678.000 sec
-INFO: Metadata:
-INFO:   width                 320.00
-INFO:   height                180.00
-INFO:   framerate             9.99
-INFO:   videocodecid          7.00
-INFO:   videodatarate         88.00
-INFO:   audiodatarate         40.00
-0.235 kB / 0.00 sec81.987 kB / 0.26 sec87.014 kB / 0.60 sec91.561 kB / 0.94 sec96.536 kB / 1.20 sec101.093 kB / 1.54 sec106.084 kB / 1.79 sec120.231 kB / 2.48 sec125.201 kB / 2.99 sec129.783 kB / 3.33 sec134.766 kB / 3.58 sec139.286 kB / 3.92 sec144.324 kB / 4.18 sec148.849 kB / 4.52 sec153.837 kB / 4.78 sec158.433 kB / 5.12 sec164.395 kB / 5.46 sec168.245 kB / 5.46 sec172.968 kB / 5.97 sec177.544 kB / 6.32 sec182.523 kB / 6.57 sec187.095 kB / 6.91 sec192.052 kB / 7.17 sec196.655 kB / 7.51 sec201.633 kB / 7.76 sec206.613 kB / 8.11 sec217.446 kB / 8.53 sec222.165 kB / 8.96 sec226.547 kB / 9.30 sec230.679 kB / 9.66 sec235.215 kB / 9.96 sec239.793 kB / 10.24 sec244.804 kB / 10.50 sec249.375 kB / 10.84 sec254.331 kB / 11.09 sec264.288 kB / 11.52 sec268.485 kB / 12.07 sec273.405 kB / 12.29 sec277.999 kB / 12.63 sec282.950 kB / 12.88 sec287.589 kB / 13.23 sec292.563 kB / 13.48 sec297.121 kB / 13.82 sec302.109 kB / 14.08 sec311.929 kB / 14.51 sec316.237 kB / 14.93 sec321.181 kB / 15.28 sec330.714 kB / 15.87 sec
-Caught signal: 2, cleaning up, just a second...
-335.718 kB / 16.21 sec335.718 kB / 16.21 sec
-Download may be incomplete (downloaded about 0.00%), try resuming
