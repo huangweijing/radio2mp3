@@ -1,0 +1,1 @@
+copy ..\workspace\radioextractor\target\radioextractor*jar-with-dependencies.jar radioextractor.jar

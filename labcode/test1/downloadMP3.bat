@@ -1,2 +1,2 @@
-..\..\tools\rtmpdump-2.4\rtmpdump -r "rtmpe://fms1.uniqueradio.jp/" -y "aandg11" -a "?rtmp://fms-base1.mitene.ad.jp/agqr/" -A 0 -B 600 -v -o output.flv
+..\..\tools\rtmpdump-2.4\rtmpdump -r "rtmpe://fms1.uniqueradio.jp/" -y "aandg11" -a "?rtmp://fms-base1.mitene.ad.jp/agqr/" -A 0 -B 5 -v -o output.flv
 ..\..\tools\ffmpeg\bin\ffmpeg -y -i output.flv output.mp3
