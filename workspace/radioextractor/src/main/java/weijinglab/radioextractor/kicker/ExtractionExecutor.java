@@ -11,19 +11,19 @@ import java.util.List;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 
-import com.mpatric.mp3agic.ID3v1;
-import com.mpatric.mp3agic.ID3v1Tag;
-import com.mpatric.mp3agic.InvalidDataException;
-import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.NotSupportedException;
-import com.mpatric.mp3agic.UnsupportedTagException;
-
 import weijinglab.radioextractor.utils.CommonUtils;
 import weijinglab.radioextractor.utils.ExtractionConstants;
 import weijinglab.radioextractor.utils.LogMessage;
 import weijinglab.radioextractor.utils.RadioExtractorSettingReader;
 import weijinglab.radioextractor.utils.SettingConstants;
 import weijinglab.radiotable.entity.ProgramEntry;
+
+import com.mpatric.mp3agic.ID3v1;
+import com.mpatric.mp3agic.ID3v1Tag;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.NotSupportedException;
+import com.mpatric.mp3agic.UnsupportedTagException;
 
 /**
  * ラジオを抽出し、mp3ファイルに変換する。
@@ -33,6 +33,8 @@ import weijinglab.radiotable.entity.ProgramEntry;
 public class ExtractionExecutor implements Runnable{
 	/** ログ記録 */
 	Logger logger = Logger.getLogger(ExtractionExecutor.class);
+
+	RadioExtractorSettingReader settingReader = RadioExtractorSettingReader.getInstance();
 	/** 関連番組情報 */
 	private ProgramEntry currentProgram;
 	/** コンストラクターよって番組情報を設定する. */
@@ -53,8 +55,6 @@ public class ExtractionExecutor implements Runnable{
 		logger.info(String.format("「%s」録画スタート!保存ファイル名「%s.mp3」"
 				, currentProgram.getProgramName()
 				, CommonUtils.convertToYyyyMMdd_ssmm(currentProgram.getStartTime())));
-		RadioExtractorSettingReader settingReader = RadioExtractorSettingReader.getInstance();
-		
 		try {
 			Date currentTime = new Date();
 			
@@ -128,7 +128,6 @@ public class ExtractionExecutor implements Runnable{
 	private boolean startConvert2Mp3(ProgramEntry currentProgram) {
 		//ファイル名を定義する（日付＋時間）
 		String filename = CommonUtils.convertToYyyyMMdd_ssmm(currentProgram.getStartTime());
-		RadioExtractorSettingReader settingReader = RadioExtractorSettingReader.getInstance();
 		//引数
 		String ffmpegParamStr = String.format(
 				settingReader.getSetting(SettingConstants.FFMPEG_PARAM_STR)
@@ -185,7 +184,6 @@ public class ExtractionExecutor implements Runnable{
 		} catch (InvalidDataException e) {
 			e.printStackTrace();
 		} catch (NotSupportedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
@@ -193,8 +191,20 @@ public class ExtractionExecutor implements Runnable{
 	
 	private boolean editMp3Tag(String filename, ProgramEntry currentProgram) 
 			throws UnsupportedTagException, InvalidDataException, IOException, NotSupportedException {
-		Mp3File mp3file = new Mp3File(filename);
+		String srcMp3FullPath = String.format(ExtractionConstants.FILE_PATH_PATTERN
+				, settingReader.getSetting(SettingConstants.FFMPEG_OUTPUT_PATH)
+				, filename
+				, ExtractionConstants.FILE_TYPE_MP3);
+		String destMp3FullPath = String.format(ExtractionConstants.FILE_PATH_PATTERN
+				, settingReader.getSetting(SettingConstants.MP3AGIC_OUTPUT_PATH)
+				, String.format("%s_%s", filename, currentProgram.getProgramName()) 
+				, ExtractionConstants.FILE_TYPE_MP3);
+		
+		Mp3File mp3file = new Mp3File(srcMp3FullPath);
 		ID3v1 id3v1Tag;
+//		if(mp3file.hasId3v1Tag()) {
+//			mp3file.removeId3v1Tag();
+//		}
 		if (mp3file.hasId3v1Tag()) {
 			  id3v1Tag =  mp3file.getId3v1Tag();
 			} else {
@@ -202,15 +212,16 @@ public class ExtractionExecutor implements Runnable{
 			  id3v1Tag = new ID3v1Tag();
 			  mp3file.setId3v1Tag(id3v1Tag);
 		}
-		id3v1Tag.setTrack(Integer.valueOf(1).toString());
-		id3v1Tag.setArtist(currentProgram.getCaster());
-		id3v1Tag.setTitle(currentProgram.getProgramName());
-		id3v1Tag.setAlbum(ExtractionConstants.RADIO_ALBUM);
+		id3v1Tag.setTrack(Integer.valueOf(2).toString());
+		id3v1Tag.setArtist(CommonUtils.changeEncoding(currentProgram.getCaster()));
+//		id3v1Tag.setArtist("test");
+		id3v1Tag.setTitle(CommonUtils.changeEncoding(currentProgram.getProgramName()));
+		id3v1Tag.setAlbum(CommonUtils.changeEncoding(ExtractionConstants.RADIO_ALBUM));
 		id3v1Tag.setYear(Integer.valueOf(
 				Calendar.getInstance().get(Calendar.YEAR)).toString());
-		id3v1Tag.setComment(String.format("メール：%s / 番組リンク：%s / "
-				, currentProgram.getCasterMail(), currentProgram.getProgramLink()));
-		mp3file.save(filename);
+		id3v1Tag.setComment(CommonUtils.changeEncoding(String.format("メール：%s \n 番組リンク：%s "
+				, currentProgram.getCasterMail(), currentProgram.getProgramLink())));
+		mp3file.save(destMp3FullPath);
 		return false;
 	}
 }

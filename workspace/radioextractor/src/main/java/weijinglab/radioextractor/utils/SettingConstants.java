@@ -31,6 +31,9 @@ public final class SettingConstants {
 	public final static String RTMPDUMP_ERR_LOG = "extractor.tools.rtmpdump.errlog";
 	/** rtmpdumpのflv出力先 */
 	public final static String RTMPDUMP_OUTPUT_PATH = "extractor.tools.rtmpdump.outputpath";
+	/** MP3AGIC転換出力先*/
+	public final static String MP3AGIC_OUTPUT_PATH = "extractor.tools.mp3agic.outputpath";
+	
 	/** コマンドの分割符号 */
 	public final static String COMMAND_SPLIT_CHAR = "##";
 }
