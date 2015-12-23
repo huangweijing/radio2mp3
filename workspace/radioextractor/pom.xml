@@ -67,7 +67,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>fully.qualified.MainClass</mainClass>
+							<mainClass>weijinglab.radioextractor.main.StartMain</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
