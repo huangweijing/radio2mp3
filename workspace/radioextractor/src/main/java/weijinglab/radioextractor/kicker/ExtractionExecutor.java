@@ -105,7 +105,7 @@ public class ExtractionExecutor implements Runnable{
 			//プログラム終了結果を取得する。
 			Integer exitValue = process.exitValue();
 			if(exitValue == 0) {
-				logger.error(String.format(
+				logger.info(String.format(
 						LogMessage.LOG_RADIO_EXTRACTION_COMPLETED, filename));
 				return true;
 			} else {
@@ -167,7 +167,7 @@ public class ExtractionExecutor implements Runnable{
 			//プログラム終了結果を取得する。
 			Integer exitValue = process.exitValue();
 			if(exitValue == 0) {
-				logger.error(String.format(LogMessage.LOG_MP3_CONVERTION_COMPLETED, filename));
+				logger.info(String.format(LogMessage.LOG_MP3_CONVERTION_COMPLETED, filename));
 				//MP3ファイル名＆タグを編集する
 				editMp3Tag(filename, currentProgram);
 				return true;
