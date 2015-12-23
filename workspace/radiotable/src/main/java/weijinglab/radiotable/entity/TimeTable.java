@@ -21,6 +21,21 @@ public class TimeTable {
 	/** 番組表データ 曜日、その日の番組表 */
 	private Map<Integer, List<ProgramEntry>> timeTableData;
 
+	public Map<Integer, List<ProgramEntry>> getTimeTableData() {
+		return timeTableData;
+	}
+	
+	public List<ProgramEntry> getAllProgramList() {
+		List<ProgramEntry> allProgramList = new ArrayList<ProgramEntry>();
+		//日曜日から土曜日までのすべての番組表を初期化する。
+		for (int dayOfWeek = Calendar.MONDAY; dayOfWeek <= Calendar.SATURDAY; dayOfWeek++) {
+			allProgramList.addAll(timeTableData.get(dayOfWeek));
+		}
+		allProgramList.addAll(timeTableData.get(Calendar.SUNDAY));
+		return allProgramList;
+	}
+	
+	
 	/**
 	 * 番組表の初期化処理
 	 */
