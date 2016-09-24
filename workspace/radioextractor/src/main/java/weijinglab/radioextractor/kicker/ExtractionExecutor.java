@@ -202,9 +202,6 @@ public class ExtractionExecutor implements Runnable{
 		
 		Mp3File mp3file = new Mp3File(srcMp3FullPath);
 		ID3v1 id3v1Tag;
-//		if(mp3file.hasId3v1Tag()) {
-//			mp3file.removeId3v1Tag();
-//		}
 		if (mp3file.hasId3v1Tag()) {
 			  id3v1Tag =  mp3file.getId3v1Tag();
 			} else {
@@ -214,7 +211,6 @@ public class ExtractionExecutor implements Runnable{
 		}
 		id3v1Tag.setTrack(Integer.valueOf(2).toString());
 		id3v1Tag.setArtist(CommonUtils.changeEncoding(currentProgram.getCaster()));
-//		id3v1Tag.setArtist("test");
 		id3v1Tag.setTitle(CommonUtils.changeEncoding(currentProgram.getProgramName()));
 		id3v1Tag.setAlbum(CommonUtils.changeEncoding(ExtractionConstants.RADIO_ALBUM));
 		id3v1Tag.setYear(Integer.valueOf(
