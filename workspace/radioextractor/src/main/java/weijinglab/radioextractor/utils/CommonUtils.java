@@ -39,4 +39,24 @@ public class CommonUtils {
 		}
 	}
 	
+	/**
+	 * ファイル保存できないファイル名の文字を消す
+	 * 対象文字列は以下となる
+	 * < (less than)
+	 > (greater than)
+	 : (colon)
+	 " (double quote)
+	 / (forward slash)
+	 \ (backslash)
+	 | (vertical bar or pipe)
+	 ? (question mark)
+	 * (asterisk)
+	 * @param path
+	 * @return 消したパス
+	 */
+	public static String deleteReservedPathChar(String path) {
+		
+		return path.replaceAll("<|>|:|\"|/|\\\\|\\|\\?|\\*", StringUtils.EMPTY);
+	}
+	
 }
