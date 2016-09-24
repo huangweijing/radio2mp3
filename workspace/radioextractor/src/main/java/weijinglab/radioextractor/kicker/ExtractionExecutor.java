@@ -197,7 +197,7 @@ public class ExtractionExecutor implements Runnable{
 				, ExtractionConstants.FILE_TYPE_MP3);
 		String destMp3FullPath = String.format(ExtractionConstants.FILE_PATH_PATTERN
 				, settingReader.getSetting(SettingConstants.MP3AGIC_OUTPUT_PATH)
-				, String.format("%s_%s", filename, currentProgram.getProgramName()) 
+				, String.format("%s_%s", CommonUtils.deleteReservedPathChar(filename), currentProgram.getProgramName()) 
 				, ExtractionConstants.FILE_TYPE_MP3);
 		
 		Mp3File mp3file = new Mp3File(srcMp3FullPath);
