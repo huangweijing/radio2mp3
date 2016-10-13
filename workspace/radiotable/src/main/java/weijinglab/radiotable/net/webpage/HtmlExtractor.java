@@ -24,7 +24,7 @@ public class HtmlExtractor {
 	/** 番組スケジュールのURL. */
 	private String timetableUrl;
 	/** 一日中最大の番組数. */
-	private Integer maxSizeOfTimeTable = 1000;
+	private Integer maxSizeOfTimeTable = 10000;
 	/** メインテーブルのCSSクラス名. */
 	private final static String TABLE_CLASS_NAME = "scrollBody";
 	/** 一週間に７日がある */
@@ -108,6 +108,8 @@ public class HtmlExtractor {
 		if(timeElements.size() > 0) {
 			//番組表から開始時間を取得する
 			String time = timeElements.get(0).text();
+			time = time.replace("頃", StringUtils.EMPTY);
+			time = time.trim();
 			String[] timeSplit = time.split(":");
 			Integer hour = Integer.valueOf(timeSplit[0]);
 			Integer minute = Integer.valueOf(timeSplit[1]);
