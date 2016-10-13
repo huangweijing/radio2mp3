@@ -24,7 +24,7 @@ public class HtmlExtractor {
 	/** 番組スケジュールのURL. */
 	private String timetableUrl;
 	/** 一日中最大の番組数. */
-	private Integer maxSizeOfTimeTable = 100;
+	private Integer maxSizeOfTimeTable = 1000;
 	/** メインテーブルのCSSクラス名. */
 	private final static String TABLE_CLASS_NAME = "scrollBody";
 	/** 一週間に７日がある */
