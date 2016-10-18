@@ -131,7 +131,7 @@ public class HtmlExtractor {
 		if(!StringUtils.isEmpty(strRowSpan)) {
 			intRowSpan = new Integer(strRowSpan);
 		}
-		programEntry.setDuration(DURATION_FOR_ONE_SPAN * intRowSpan);
+		programEntry.setDuration(/**DURATION_FOR_ONE_SPAN * */intRowSpan);
 
 		Elements titleElements = tdElement.getElementsByClass("title-p");
 		if(titleElements.size() > 0) {

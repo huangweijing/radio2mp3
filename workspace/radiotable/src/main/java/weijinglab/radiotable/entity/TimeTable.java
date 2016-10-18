@@ -35,6 +35,16 @@ public class TimeTable {
 		return allProgramList;
 	}
 	
+	public void printOutAllProgram() {
+		 List<ProgramEntry> allProgramList = getAllProgramList();
+		 for(ProgramEntry programEntry : allProgramList) {
+			 System.out.println(String.format("%s: %s", programEntry.getProgramName()
+					 , programEntry.getStartTime()) );
+		 }
+			 
+			 
+	}
+	
 	
 	/**
 	 * 番組表の初期化処理

@@ -13,11 +13,14 @@ public class HtmlExtractorTest extends TestCase {
 	public void testFillTimeTable() throws IOException {
 		HtmlExtractor htmlExtractor = new HtmlExtractor();
 		TimeTable timeTable = new TimeTable();
-		htmlExtractor.setTimetableUrl("http://www.agqr.jp/timetable/streaming.php");
+		htmlExtractor.setTimetableUrl("http://www.agqr.jp/timetable/streaming.html");
 		htmlExtractor.fillTimeTable(timeTable);
 		ProgramEntry currentProgram = timeTable.getCurrentProgram(new Date());
 		System.out.println(currentProgram.getProgramName());
 		System.out.println(currentProgram.getCaster());
+		System.out.println(currentProgram.getStartTime());
+//		System.out.println("=============================");
+//		timeTable.printOutAllProgram();
 	}
 
 	public void testGetTimetableUrl() {
