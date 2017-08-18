@@ -25,6 +25,8 @@ public class HtmlExtractor {
 	private String timetableUrl;
 	/** 一日中最大の番組数. */
 	private Integer maxSizeOfTimeTable = 10000;
+	/** メインヘッダのCSSクラス名. */
+	private final static String HEAD_CLASS_NAME = "scrollHead";
 	/** メインテーブルのCSSクラス名. */
 	private final static String TABLE_CLASS_NAME = "scrollBody";
 	/** 一週間に７日がある */
@@ -42,11 +44,23 @@ public class HtmlExtractor {
 	public void fillTimeTable(TimeTable timeTable) throws IOException {
 		//一週間分の番組 * maxSizeOfTimeTable
 		Element tableArr[][] = new Element[DAY_COUNT_OF_WEEK][maxSizeOfTimeTable];
-
+		String[] headDateArr = new String[7];
 		//
 		Document document = Jsoup.connect(this.timetableUrl).get();
 		
-//		System.out.println(document.html());
+		Elements headElements = document.getElementsByClass(HEAD_CLASS_NAME);
+		if(headElements.size() > 0)
+		{
+			Element dateThead = headElements.get(0);
+			Elements dateTdArray = dateThead.getElementsByTag("td");
+			Integer headDateArrIdx = 0;
+			for(Element dateTd : dateTdArray){
+				if(dateTd.html().contains("/")){
+					headDateArr[headDateArrIdx] = dateTd.html().replaceAll("（.*）", StringUtils.EMPTY);
+					headDateArrIdx++;
+				}
+			}
+		}
 		
 		Elements elements = document.getElementsByClass(TABLE_CLASS_NAME);
 		if(elements.size() > 0)
@@ -71,7 +85,8 @@ public class HtmlExtractor {
 						tableArr[minNotBlankVector.getLeft()][minNotBlankVector.getRight() + i] = tdElement; 
 					}
 					ProgramEntry programEntry = createProgramEntryByTd(
-							RadioTableUtil.convertArrayIndexToWeekday(minNotBlankVector.getLeft())
+							headDateArr[minNotBlankVector.getLeft()]
+							//RadioTableUtil.convertArrayIndexToWeekday(minNotBlankVector.getLeft())
 							, tdElement);
 					
 					timeTable.addProgramEntry(
@@ -91,17 +106,22 @@ public class HtmlExtractor {
 	 * @param tdElement
 	 * @return
 	 */
-	private ProgramEntry createProgramEntryByTd(Integer dayOfWeek, Element tdElement) {
+	private ProgramEntry createProgramEntryByTd(String dateStr, Element tdElement) {
 		ProgramEntry programEntry = new ProgramEntry();
 		//当日日付を取得する
 		Calendar programStartDate = Calendar.getInstance();
 		
-		Integer arrIdxWeekday = RadioTableUtil.convertWeekdayToArrayIndex(dayOfWeek);
-		Integer todayArrIdxWeekday = RadioTableUtil.convertWeekdayToArrayIndex(
-				programStartDate.get(Calendar.DAY_OF_WEEK));
-//		System.out.println(String.format("%s %s", arrIdxWeekday, todayArrIdxWeekday));
-		programStartDate.add(Calendar.DATE, arrIdxWeekday - todayArrIdxWeekday);
+//		Integer arrIdxWeekday = RadioTableUtil.convertWeekdayToArrayIndex(dayOfWeek);
+//		Integer todayArrIdxWeekday = RadioTableUtil.convertWeekdayToArrayIndex(
+//				programStartDate.get(Calendar.DAY_OF_WEEK));
+////		System.out.println(String.format("%s %s", arrIdxWeekday, todayArrIdxWeekday));
+//		programStartDate.add(Calendar.DATE, arrIdxWeekday - todayArrIdxWeekday);
 		
+		Integer month = Integer.parseInt(dateStr.split("/")[0]);
+		Integer day = Integer.parseInt(dateStr.split("/")[1]);
+		programStartDate.set(Calendar.MONTH, month - 1);
+		programStartDate.set(Calendar.DAY_OF_MONTH, day);
+
 //		System.out.println(programStartDate.get(Calendar.DATE));
 		
 		Elements timeElements = tdElement.getElementsByClass("time");

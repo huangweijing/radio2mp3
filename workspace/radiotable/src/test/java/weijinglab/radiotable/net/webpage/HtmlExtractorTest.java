@@ -20,7 +20,7 @@ public class HtmlExtractorTest extends TestCase {
 		System.out.println(currentProgram.getCaster());
 		System.out.println(currentProgram.getStartTime());
 //		System.out.println("=============================");
-//		timeTable.printOutAllProgram();
+		timeTable.printOutAllProgram();
 	}
 
 	public void testGetTimetableUrl() {
